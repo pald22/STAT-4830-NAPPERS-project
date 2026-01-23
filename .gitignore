@@ -4,3 +4,21 @@ docs/figures/*
 !docs/figures/*.tex
 
 local/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+.venv/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# uv
+.uv/
+uv.lock
