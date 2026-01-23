@@ -22,3 +22,9 @@ ENV/
 # uv
 .uv/
 uv.lock
+
+# Data files (uncomment if you have large data files)
+# data/raw/*
+# data/processed/*
+# data/external/*
+# !data/**/.gitkeep
