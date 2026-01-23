@@ -1,0 +1,15 @@
+# Data Directory
+
+This directory contains project data files.
+
+## Structure
+
+- `raw/` - Original, unprocessed data files
+- `processed/` - Cleaned and transformed data files
+- `external/` - Third-party or downloaded data files
+
+## Notes
+
+- Large data files (>10MB) should be added to `.gitignore`
+- Sensitive data should never be committed to the repository
+- Document data sources and processing steps in your notebooks or development log
