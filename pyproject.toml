@@ -1,0 +1,35 @@
+[project]
+name = "stat-4830-nappers-project"
+version = "0.1.0"
+description = "STAT-4830 NAPPERS Project"
+requires-python = ">=3.9"
+dependencies = [
+    "jupyter>=1.0.0",
+    "numpy>=1.24.0",
+    "pandas>=2.0.0",
+    "matplotlib>=3.7.0",
+    "scipy>=1.10.0",
+    "scikit-learn>=1.3.0",
+]
+
+[project.optional-dependencies]
+optimization = [
+    "cvxpy>=1.3.0",
+    "pulp>=2.7.0",
+    "ortools>=9.7.0",
+    "scipy>=1.10.0",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = []
+
+[dependency-groups]
+dev = [
+    "ipykernel>=6.25.0",
+    "black>=23.0.0",
+    "ruff>=0.1.0",
+]
