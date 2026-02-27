@@ -19,6 +19,9 @@ ENV/
 # Jupyter Notebook
 .ipynb_checkpoints
 
+# proprietary data
+crsp/
+
 # uv
 .uv/
 uv.lock
