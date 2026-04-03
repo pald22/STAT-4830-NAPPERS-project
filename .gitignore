@@ -1,0 +1,14 @@
+.venv/
+**/.venv/
+
+Outputs/
+**/Outputs/
+
+crsp/
+**/crsp/
+
+.ipynb_checkpoints/
+**/.ipynb_checkpoints/
+
+__pycache__/
+*.pyc
