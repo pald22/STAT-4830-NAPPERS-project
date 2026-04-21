@@ -1,8 +1,6 @@
 .venv/
 **/.venv/
 
-Outputs/
-**/Outputs/
 
 crsp/
 **/crsp/
