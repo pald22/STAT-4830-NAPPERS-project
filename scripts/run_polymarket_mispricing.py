@@ -17,7 +17,7 @@ from polymarket.load import enrich_snapshot, load_polymarket_snapshot
 
 def main() -> None:
     p = argparse.ArgumentParser(description="Polymarket mispricing portfolio baseline")
-    p.add_argument("--csv", type=Path, default=None, help="Path to polymarket_markets_rich.csv")
+    p.add_argument("--csv", type=Path, default=None, help="Path to Polymarket CSV (snapshot or daily panel)")
     p.add_argument("--out", type=Path, default=ROOT / "outputs" / "polymarket_mispricing")
     p.add_argument("--folds", type=int, default=5)
     p.add_argument("--gamma", type=float, default=2.0)
@@ -27,9 +27,16 @@ def main() -> None:
 
     path = args.csv
     if path is None:
-        path = ROOT / "polymarket_markets_rich.csv"
-        if not path.is_file():
-            path = ROOT / "data" / "polymarket_markets_rich.csv"
+        for candidate in (
+            ROOT / "polymarket_daily_panel_60plus.csv",
+            ROOT / "polymarket_markets_rich.csv",
+            ROOT / "data" / "polymarket_markets_rich.csv",
+        ):
+            if candidate.is_file():
+                path = candidate
+                break
+        if path is None:
+            raise FileNotFoundError("No Polymarket CSV found (checked 60plus panel and markets snapshots).")
 
     raw = load_polymarket_snapshot(path)
     df = enrich_snapshot(raw)

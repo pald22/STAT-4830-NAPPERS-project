@@ -29,8 +29,8 @@ def build_raw_features(df: pd.DataFrame, ref_time: pd.Timestamp) -> pd.DataFrame
     feats = pd.DataFrame(index=df.index)
     feats["log_volume"] = _safe_log1p(df.get("volumeNum", df.get("volume", 0)))
     feats["log_liquidity"] = _safe_log1p(df.get("liquidityNum", df.get("liquidity", 0)))
-    feats["spread"] = pd.to_numeric(df.get("spread"), errors="coerce")
-    feats["competitive"] = pd.to_numeric(df.get("competitive"), errors="coerce")
+    feats["spread"] = pd.to_numeric(df.get("spread", 0.0), errors="coerce")
+    feats["competitive"] = pd.to_numeric(df.get("competitive", 0.0), errors="coerce")
 
     end = df["endDate_parsed"] if "endDate_parsed" in df.columns else pd.Series(pd.NaT, index=df.index)
     if not isinstance(ref_time, pd.Timestamp):
@@ -38,7 +38,8 @@ def build_raw_features(df: pd.DataFrame, ref_time: pd.Timestamp) -> pd.DataFrame
     days = (pd.to_datetime(end, utc=True) - ref_time).dt.total_seconds() / 86400.0
     feats["log_days_to_end"] = np.log1p(np.maximum(days.fillna(30.0), 1.0))
 
-    liq = pd.to_numeric(df.get("liquidityNum", 1.0), errors="coerce").fillna(1.0).clip(lower=1.0)
+    liq_source = df.get("liquidityNum", df.get("liquidity", pd.Series(1.0, index=df.index)))
+    liq = pd.to_numeric(liq_source, errors="coerce").fillna(1.0).clip(lower=1.0)
     feats["neg_log_liquidity"] = -np.log(liq)
 
     return feats

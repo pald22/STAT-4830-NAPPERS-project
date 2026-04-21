@@ -14,10 +14,11 @@ def executable_yes_price(df: pd.DataFrame) -> pd.Series:
     - else implied_0 + half spread when spread exists;
     - else implied_0.
     """
-    implied = pd.to_numeric(df.get("implied_0"), errors="coerce")
-    bid = pd.to_numeric(df.get("bestBid"), errors="coerce")
-    ask = pd.to_numeric(df.get("bestAsk"), errors="coerce")
-    sp = pd.to_numeric(df.get("spread"), errors="coerce")
+    implied_src = df.get("implied_0", df.get("price", pd.Series(np.nan, index=df.index)))
+    implied = pd.to_numeric(implied_src, errors="coerce")
+    bid = pd.to_numeric(df.get("bestBid", pd.Series(np.nan, index=df.index)), errors="coerce")
+    ask = pd.to_numeric(df.get("bestAsk", pd.Series(np.nan, index=df.index)), errors="coerce")
+    sp = pd.to_numeric(df.get("spread", pd.Series(np.nan, index=df.index)), errors="coerce")
 
     out = implied.copy()
     if implied.isna().any() and ask.notna().any():
@@ -38,6 +39,7 @@ def executable_yes_price(df: pd.DataFrame) -> pd.Series:
 
 def liquidity_loadings(df: pd.DataFrame, eps: float = 1.0) -> np.ndarray:
     """Coefficients l_i >= 0 for constraint sum_i w_i * l_i <= budget (inverse depth)."""
-    liq = pd.to_numeric(df.get("liquidityNum", 1.0), errors="coerce").fillna(1.0).values.astype(float)
+    liq_source = df.get("liquidityNum", df.get("liquidity", pd.Series(1.0, index=df.index)))
+    liq = pd.to_numeric(liq_source, errors="coerce").fillna(1.0).values.astype(float)
     liq = np.maximum(liq, eps)
     return 1.0 / np.sqrt(liq)

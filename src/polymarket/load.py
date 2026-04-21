@@ -63,15 +63,31 @@ def load_polymarket_snapshot(path: Path | None = None, **read_csv_kw) -> pd.Data
 def enrich_snapshot(df: pd.DataFrame) -> pd.DataFrame:
     """Add implied_0, event_id, event_slug — mirrors the exploration notebook."""
     out = df.copy()
+    if "id" not in out.columns and "market_id" in out.columns:
+        out["id"] = out["market_id"]
     if "outcomePrices" in out.columns:
         out["implied_0"] = out["outcomePrices"].map(first_outcome_price)
+    if "implied_0" not in out.columns and "price" in out.columns:
+        out["implied_0"] = pd.to_numeric(out["price"], errors="coerce")
     if "events" in out.columns:
         out["event_id"] = out["events"].map(first_event_id)
         out["event_slug"] = out["events"].map(first_event_slug)
+    elif "slug" in out.columns:
+        # Fallback event key for panel rows where events JSON is unavailable.
+        out["event_id"] = out["slug"].astype(str)
+        out["event_slug"] = out["slug"].astype(str)
     if "createdAt" in out.columns:
         out["createdAt"] = pd.to_datetime(out["createdAt"], utc=True, errors="coerce")
+    elif "datetime_utc" in out.columns:
+        out["createdAt"] = pd.to_datetime(out["datetime_utc"], utc=True, errors="coerce")
+    elif "date" in out.columns:
+        out["createdAt"] = pd.to_datetime(out["date"], utc=True, errors="coerce")
+    elif "timestamp" in out.columns:
+        out["createdAt"] = pd.to_datetime(out["timestamp"], unit="s", utc=True, errors="coerce")
     if "endDateIso" in out.columns:
         out["endDate_parsed"] = pd.to_datetime(out["endDateIso"], utc=True, errors="coerce")
+    elif "end_date_iso" in out.columns:
+        out["endDate_parsed"] = pd.to_datetime(out["end_date_iso"], utc=True, errors="coerce")
     elif "endDate" in out.columns:
         out["endDate_parsed"] = pd.to_datetime(out["endDate"], utc=True, errors="coerce")
     return out
