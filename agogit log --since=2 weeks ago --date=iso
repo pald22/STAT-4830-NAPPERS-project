@@ -1,0 +1,86 @@
+[33m87b9916[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m multi period opt
+[33m8f4b1f7[m added extention opt
+[33m5a83c3b[m experiments final report
+[33m51b0840[m ran the experiments, saved the outputs
+[33m95eb000[m experiments implemented and report docs
+[33meed6eb7[m exploration of time series data and experiment docs master
+[33m04ef72f[m Add files via upload
+[33m40deab1[m Add files via upload
+[33mba483d8[m Add files via upload
+[33m7d52cc3[m Add files via upload
+[33m63123e5[m Add files via upload
+[33m5413d35[m Add files via upload
+[33me5f932c[m cursor llm conversation md polymarket hist
+[33m3be79d6[m new slides version update
+[33m387104b[m Add polymarket pipeline implementation
+[33m65a7288[m Add files via upload
+[33mefefff3[m Add files via upload
+[33m11c9150[m Add files via upload
+[33m464aea9[m reorganize repository files
+[33m77703e0[m Add files via upload
+[33m48d32c2[m Add files via upload
+[33md23d7f1[m Add files via upload
+[33m14d76a7[m script to fetch Kalshi data
+[33m116f914[m Add files via upload
+[33me0bf1e8[m Week 9 Slides
+[33m7c18f4a[m Add files via upload
+[33ma48b56d[m GPTDataset - NCAA 2026 data
+[33m8bd571b[m Add files via upload
+[33mdcddec3[m Add files via upload
+[33m9e477b7[m Refactor week 6 notebook to improve structure and usability, adding kernel instructions and enhancing markdown explanations while maintaining data analysis functionality.
+[33md80d688[m Enhance week 6 notebook with advanced data analysis techniques, including additional visualizations and summary statistics for SP500 daily data.
+[33m80478f6[m Implement week 6 notebook with data analysis using pandas and numpy, including initial data loading and display of SP500 daily data.
+[33m9b67ed5[m week6 new implement daily
+[33m4f998de[m Refactor week3_implementation notebook: streamline code cells, update metadata, and enhance clarity of markdown sections.
+[33m53cbee0[m Update .gitignore to include proprietary data directory
+[33m9a737fa[m slides 1 pptx+pdf, latex doc 4
+[33m3d861d2[m added new doc pdf version with added skew latex
+[33mbc06dfa[m last_minute_touches
+[33m5e6e342[m test_basics.py
+[33m1d9c192[m Merge branch 'damek:main' into main
+[33m3db05d1[m Add files via upload
+[33m0ed5366[m Add files via upload
+[33m74a8979[m Add files via upload
+[33mcd6269a[m Self-critique with OODA framework insights
+[33m1bc2542[m Self Critique Markdown
+[33mfc3552d[m Self Critique
+[33m932c545[m Added latex pdf and whiteboards
+[33mac09d3b[m Add files via upload
+[33mafe61cf[m Incorporate discussion points from team meeting
+[33mc406588[m Creating Prompt Doc
+[33m7f58d2e[m Shift first deliverable to week 4
+[33m0f9e9f3[m cut
+[33mcd7cdb2[m esg
+[33m07bfff7[m 1loopcvx
+[33mbc89d78[m 1loopcvx
+[33m6911508[m Report Ideas
+[33m331a9f7[m llm markdown
+[33m63cb734[m First draft of LLM conversation
+[33medd0394[m data2
+[33mcb5c6dc[m data1
+[33me32f9bf[m test2
+[33m7dc5431[m Remove build-system configuration from pyproject.toml
+[33m1215b3e[m Refine .gitignore to exclude additional IDE and temporary files
+[33mbaca523[m Enhance .gitignore to exclude Python, Jupyter Notebook, and uv-related files
+[33mc28dac3[m test1
+[33mdcdd3d4[m[33m ([m[1;31mupstream/main[m[33m, [m[1;31mupstream/HEAD[m[33m)[m Update TA email
+[33m6e0dbbd[m Move project examples to end and label Spring 2025
+[33m513f85e[m Update README for Spring 2026 schedule and tooling
+[33me25b3c9[m Update Week 13 presentation dates in README.md
+[33md65943c[m Add project team summaries and links to README.md for Spring 2025
+[33m057ae83[m Add .DS_Store to .gitignore to prevent tracking of macOS system files
+[33m5c6154b[m Update .gitignore to exclude local directory and ensure TEX files are ignored
+[33m0208c50[m Add Week 2 deliverable: Email team names to TA
+[33mea50d16[m Update README.md and add figures directory
+[33m92669ab[m Update .gitignore to include TEX files in figures directory
+[33mf432ae9[m Update Week 3 deliverable instructions with revised grading criteria and critique section
+[33m1f2a911[m Update repository link in index.md
+[33ma7a3a94[m Add OODA loop diagram with source and update README
+[33m494d61f[m Update project structure, grading, and documentation
+[33ma43fea1[m Update README with Week 3 project deliverable structure and add project scaffolding guide
+[33m1c7793e[m Update README with correct file structure and deliverables
+[33ma19abce[m Combine overview sections and update repository structure to match deliverables
+[33m494c409[m Reorganize README to focus on learning objectives first, move setup to reference section
+[33m99f1010[m Reorganize README to clearly separate base repo from team content
+[33m65a8342[m Update README structure and improve LLM session template
+[33m9b3de27[m Initial template setup
