@@ -1,235 +1,585 @@
-# STAT 4830 Project Repository
+# STAT 4830 NAPPERS Project — Reproducibility Guide
 
-Welcome to your project repository! This template helps you develop and implement an optimization project over the semester.
+This repository contains three related research tracks:
 
-## Getting Started
+1. **Equity portfolio optimization** on the included S&P 500 monthly data.
+2. **Polymarket mispricing optimization** using a leakage-safe walk-forward portfolio optimizer.
+3. **Polymarket daily-panel experiments** covering predictability, liquidity, cross-sectional factors, unresolved-market risk, and validation design.
 
-1. **Finding Your Project Idea**
-   - Start with our [Project Ideas Guide](docs/finding_project_ideas.md)
-   - Use AI to explore and refine your ideas
-   - Take time to find something you care about
+The original course-template README has been preserved as `README_course_template.md`. This top-level README is the practical reproduction guide for the project code and outputs.
 
-   It's very important you learn to use AI tools in your work! [Noam Brown](https://x.com/polynoamial/status/1870307185961386366) (OpenAI) says that students should...
-   > Practice working with AI. Human+AI will be superior to human or AI alone for the foreseeable future. Those who can work most effectively with AI will be the most highly valued.
+---
 
-   ![Noam tweet](figures/noam.png)
+## 1. Repository map
 
-2. **Week 4 Deliverable**
-  - Follow the [Week 4 Instructions](docs/assignments/week4_deliverable_instructions.md)
-   - Required components:
-     - Initial report draft
-     - Self-critique document analyzing your report's strengths and weaknesses
-     - Supporting Jupyter notebooks/code
-  - Due: Friday, February 6, 2026
-
-## Project Development Cycle
-
-Each week follows an OODA (Observe, Orient, Decide, Act) loop that helps you improve your project systematically:
-
-![Project Development Cycle - A diagram showing the OODA loop (Observe, Orient, Decide, Act) adapted for project development. Each phase has specific activities: Observe (Review Report, Check Results), Orient (Write Critique, Find Gaps), Decide (Plan Changes, Set Goals), and Act (Code, Run Tests). The phases are connected by arrows showing the flow of work, with a feedback loop labeled "Iterative Development" completing the cycle.](docs/figures/ooda_loop.png)
-
-Each cycle produces specific deliverables:
-- OBSERVE: Updated report draft
-- ORIENT: Self-critique document
-- DECIDE: Next actions plan
-- ACT: Code changes & results
-
-See the [Week 4 Instructions](docs/assignments/week4_deliverable_instructions.md) for detailed guidance on writing your first self-critique.
-
-## Project Schedule
-
-### Deliverables (Due Fridays)
-- Week 2 (Jan 23): Email Project Team Names to Ai, Jiahao <jiahaoai@wharton.upenn.edu>
-- Week 4 (Feb 6): Report Draft 1 + Code + Self Critique
-- Week 5 (Feb 13): Slides Draft 1
-- Week 6 (Feb 20): Report Draft 2 + Code + Self Critique
-- Week 7 (Feb 27): Slides Draft 2
-- Week 8: ⚡ Lightning Talks in Class (Mar 3/5) & Report Draft 3 due Friday ⚡
-- Spring Break (Mar 7-15)
-- Week 9 (Mar 20): Slides Draft 3
-- Week 10 (Mar 27): Report Draft 4 + Code + Self Critique
-- Week 11 (Apr 3): Slides Draft 4
-- Week 12 (Apr 10): Report Draft 5 + Code + Self Critique
-- Week 13 (Apr 17): Slides Draft 5
-- Week 14 (Apr 21/23): Final Presentations in Class
-- Week 15 (Apr 28): Final Report + Code + Self Critique
-
-Note: Instructions for peer feedback will be added throughout the semester for each deliverable.
-
-Each draft builds on the previous one, incorporating feedback and new results. You'll meet with course staff three times during the semester to discuss your progress.
-
-## Project Grading
-
-Each deliverable is graded on five components:
-- Report (20%): Problem statement, methodology, results
-- Implementation (35%): Working code, tests, experiments
-- Development Process (15%): Logs, decisions, iterations
-- Critiques (15%): Reflection and planning
-  - Self-critiques (required)
-  - Peer critiques (when assigned)
-  - Response to feedback
-- Repository Structure (15%): Organization, documentation, clarity
-
-Remember:
-- Quality > Quantity
-- Working > Perfect
-
-## Repository Structure
-
-```
-your-repo/
-├── README.md                    # This file
-├── report.md                    # Your project report
-├── notebooks/                   # Jupyter notebooks
-├── src/                        # Source code
-├── tests/                      # Test files
-└── docs/
-    ├── finding_project_ideas.md    # Guide to finding your project
-    ├── assignments/                # Assignment instructions
-    ├── llm_exploration/           # AI conversation logs
-    └── development_log.md         # Progress & decisions
+```text
+STAT-4830-NAPPERS-project-main/
+├── README.md                                      # this reproduction guide
+├── README_course_template.md                      # original course template README
+├── data/
+│   ├── stock_market/
+│   │   ├── README.md
+│   │   └── sp500_monthly (1) (1).csv              # S&P 500 monthly panel
+│   └── prediction_market/
+│       ├── polymarket_daily_panel_60plus.csv      # daily Polymarket panel, 60+ day markets
+│       ├── polymarket_markets_rich.csv            # rich static market snapshot
+│       └── polymarket_time_data.zip
+├── docs/
+│   └── polymarket_panel/
+│       ├── polymarket_mispricing_pipeline.md
+│       ├── master_experiment_plan.md
+│       ├── exp_01_persistent_predictability.md
+│       ├── exp_02_liquidity_forecastability.md
+│       ├── exp_03_cross_sectional_factors.md
+│       ├── exp_04_unresolved_market_risk.md
+│       ├── exp_05_validation_design.md
+│       └── final_panel_time_series_report.md
+├── notebooks/
+│   ├── demo_01_optimization_equity_and_polymarket.ipynb
+│   ├── demo_02_polymarket_panel_experiments.ipynb
+│   └── Week*.ipynb                                # earlier development notebooks
+├── scripts/
+│   ├── run_polymarket_mispricing.py
+│   └── run_panel_experiments.py
+├── src/
+│   ├── data_loader.py                             # equity data helpers
+│   ├── features.py                                # equity feature helpers
+│   ├── model.py                                   # equity moment estimator + optimizer
+│   └── polymarket/
+│       ├── load.py
+│       ├── features.py
+│       ├── execution.py
+│       ├── model_baseline.py
+│       ├── optimizer.py
+│       ├── backtest.py
+│       ├── diagnostics.py
+│       ├── io.py
+│       └── panel_experiments.py
+├── tests/
+│   └── test_basic.py
+└── Outputs/
+    ├── polymarket_mispricing/
+    ├── polymarket_panel_experiments/
+    ├── demo_optimization/
+    └── demo_polymarket_panel_experiments/
 ```
 
-## Development Environment
+---
 
-### Editor Setup
-We recommend using **Cursor**. Students with a `.edu` address get **one year of Cursor Pro for free**: https://cursor.com/students. Cursor is VS Code–compatible (same shortcuts/extensions) but adds in-IDE AI assistance tuned for multi-file context and refactors.
+## 2. Environment setup
 
-### Required Tools
-- Python 3.10+
-- PyTorch
-- Jupyter Notebook/Lab
-- Git
+Use Python 3.10 or newer. The notebooks and tests were smoke-tested in the container with Python 3.13, pandas, NumPy, scikit-learn, matplotlib, Jupyter, and pytest.
 
-## Git Setup and Workflow
+From the repository root:
 
-### First Time Setup
-1. Fork this repository
-   - Click "Fork" in the top right
-   - Name it `STAT-4830-[team-name]-project`
-   - This creates your own copy that can receive updates
-
-2. Set up Git (if you haven't already):
-   Cursor includes Git integration and prompts you to install Git if it's missing.
-   
-   For detailed instructions, see the [Official Git installation guide](https://github.com/git-guides/install-git)
-
-   After installing, set up your identity:
-   ```bash
-   git config --global user.name "Your Name"
-   git config --global user.email "your.email@upenn.edu"
-   ```
-
-3. Clone your fork:
-   ```bash
-   # HTTPS (easier):
-   git clone https://github.com/[your-username]/STAT-4830-[team-name]-project.git
-
-   # SSH (if you've set up SSH keys):
-   git clone git@github.com:[your-username]/STAT-4830-[team-name]-project.git
-   
-   cd STAT-4830-[team-name]-project
-   ```
-
-4. Add upstream remote (to get updates):
-   ```bash
-   # HTTPS:
-   git remote add upstream https://github.com/damek/STAT-4830-project-base.git
-
-   # SSH:
-   git remote add upstream git@github.com:damek/STAT-4830-project-base.git
-   ```
-
-5. Add your team members as collaborators:
-   - Go to your repo on GitHub
-   - Settings → Collaborators → Add people
-   - Add using their GitHub usernames
-
-### Working on Your Project
-1. Create a new branch:
-   ```bash
-   git checkout -b exploration
-   ```
-
-2. Make changes and commit:
-   ```bash
-   git add .
-   git commit -m "Description of changes"
-   git push origin exploration
-   ```
-
-### Getting Updates
-When the base repository is improved:
 ```bash
-# Get updates
-git fetch upstream
-git checkout main
-git merge upstream/main
+python -m venv .venv
+source .venv/bin/activate      # macOS/Linux
+# .venv\Scripts\activate       # Windows PowerShell/CMD equivalent
 
-# Update your branch
-git checkout exploration
-git merge main
+python -m pip install --upgrade pip
+python -m pip install numpy pandas matplotlib scikit-learn jupyter nbformat nbclient pytest
 ```
 
-### Troubleshooting
-- Having Git issues? Post on Ed Discussion
-- Can't push/pull? Check if you're using HTTPS or SSH
-- Windows path too long? Enable long paths:
-  ```bash
-  git config --system core.longpaths true
-  ```
+The older weekly notebooks used PyTorch directly. The reusable equity optimizer in `src/model.py` is now NumPy-based for portability, but if you want to run the old torch-heavy notebooks, also install PyTorch:
 
-## Getting Help
-- Use AI tools (ChatGPT, GitHub Copilot)
-- See course staff for technical issues
-- Document your progress
+```bash
+python -m pip install torch
+```
 
+Use `python -m pytest` rather than bare `pytest` if your environment has multiple Python installations:
 
-## Spring 2025 Project Examples
+```bash
+python -m pytest -q
+```
 
-Current student projects:
+Expected result:
 
-1. **Decentralized Recommendation for Cold-Start Personalization**  
-   * **Summary:** Builds a cross-platform fashion recommender for users with little history. Synthesizes persona-level ratings, embeds ~3k products with CLIP image/text vectors, and benchmarks content-based filtering, collaborative filtering, low-rank matrix factorization, and a two-tower deep model. Evaluates RMSE/MAE and Precision/Recall@K to trade off global error vs. top-K relevance under cold-start.  
-   * **Link:** [Final Report](https://github.com/kuomat/STAT-4830-vllm-project/blob/main/Final%20Report.pdf)
+```text
+3 passed
+```
 
-2. **Optimizing Attention Mechanisms in Transformer Models**  
-   * **Summary:** Replaces $O(n^2)$ attention with efficient variants: learned sparse masks, Performer-style kernelized attention, and hierarchical sparsity. Trains on WikiText-2, minimizing KL-divergence to a baseline Transformer while tracking cross-entropy, coherence, and memory/latency. Shows custom masks preserve fluency with lower compute.  
-   * **Link:** [Final Report](https://github.com/charisgao/STAT-4830-Optimizing-Attention-Project/blob/main/docs/report.md)
+---
 
-3. **Poker Zero: Risk-Aware Agents for No-Limit Hold'em**  
-   * **Summary:** Designs a poker agent that blends LLM-guided reasoning with self-play reinforcement learning. Uses counterfactual regret minimization heuristics and win-rate/stack-size metrics against GTO-style opponents to study bluffing, bet sizing, and stability under incomplete information.  
-   * **Link:** [Final Report](https://github.com/AC2005/STAT-4830-poker/blob/main/docs/Final%20Report.pdf)
+## 3. Important path conventions
 
-4. **Portfolio Refinement Through Iterative Sequential Modeling (PRISM)**  
-   * **Summary:** Optimizes daily portfolios with penalties on drawdown, turnover, and concentration. Formulates a multi-objective loss, applies sequential modeling to adapt weights, and benchmarks Sharpe, max drawdown, and turnover against “safe” baselines.  
-   * **Link:** [Final Report](https://github.com/dhruv575/STAT-4830-project-base/blob/main/report.md)
+Set `PYTHONPATH=src` when running the command-line scripts so Python can import the `polymarket` package:
 
-5. **Optimization in Preference Learning**  
-   * **Summary:** Predicts hotel choices using two pipelines: mixture preference models optimized via Frank–Wolfe variants, and low-rank matrix completion with bias-aware initialization and Huber loss. Expedia-derived data backtests show linear preference models outperform deeper nets under sparsity, while matrix completion boosts robustness.  
-   * **Link:** [Final Report](https://github.com/Lexaun-chen/STAT-4830-Group-Project/blob/main/Final_Report.pdf)
+```bash
+export PYTHONPATH=src          # macOS/Linux
+# set PYTHONPATH=src           # Windows CMD
+# $env:PYTHONPATH="src"        # Windows PowerShell
+```
 
-6. **Designing Good Rewards for Reinforcement Learning on LLMs**  
-   * **Summary:** Implements GRPO on Qwen-1.5B for GSM8K-style reasoning, comparing rule-based vs. hybrid perplexity rewards. Early experiments on matrix inversion validate dense rewards; hybrid absolute/relative perplexity improves stability over naive reward shaping.  
-   * **Link:** [Final Report](https://github.com/JustinSQiu/STAT-4830-curriculum-learning-project/blob/main/report.md)
+Outputs in this repo use the capitalized folder `Outputs/`. This matters on Linux/macOS because paths are case-sensitive.
 
-7. **SAT Formula Extraction via Transformer Optimization**  
-   * **Summary:** Fine-tunes FLAN-T5 to emit symbolic formulas for SAT word problems, then solves them with SymPy. Uses GRPO-style training, regex parsing, and answer-level checks; reports ~81% symbolic similarity and ~72% answer accuracy with a formula-to-answer pipeline.  
-   * **Link:** [Final Report](https://github.com/awu626/STAT-4830-project/blob/main/FinalReport.md)
+The two new demo notebooks find the repository root automatically and add `src/` to the import path, so they can be launched from either the repo root or the `notebooks/` directory.
 
-8. **Modeling Human Behavior Without Humans – Bringing Prospect Theory to Multi-Agent RL**  
-   * **Summary:** Extends MADDPG with cumulative prospect theory transforms (CPT-MADDPG) to control risk attitudes. Evaluates on Simple Tag/Spread and first-price auctions; shows risk-seeking CPT speeds early learning, loss-averse CPT enforces prudence, and shared utility aggregation preserves coordination.  
-   * **Link:** [Final Report](https://github.com/sheyanlalmohammed1/STAT-4830-CPT-MARL-project/blob/main/report.pdf)
+---
 
-9. **Sleep is All We Need: Optimizing EEG-Based Deep Learning Models for N1 Sleep Onset Detection**  
-   * **Summary:** Builds a two-stage ensemble for detecting the rare N1 sleep stage from single-channel EEG. Combines convolutional encoders, domain-specific PSD/Catch22 features, a transformer sequence model, and an N1-focused detector, improving N1 F1 from 0.38 to 0.53 while maintaining overall accuracy.  
-   * **Link:** [Final Report](https://github.com/kimberlyliang/STAT-4830-GOALZ-project/blob/main/report.pdf)
+## 4. New demo notebooks
 
-10. **Optimizing Vehicle Routing with Graph-Based and Probabilistic Models**  
-    * **Summary:** Compares Dijkstra/A* baselines with BERT-based trip models, reinforcement learning policies, and graph neural networks to optimize travel time and EV energy use. Uses OSMnx data plus eVED/EV trip logs; predicts routes and per-trip energy, benchmarking against historical trips and shortest-path baselines.  
-    * **Link:** [Final Report](https://github.com/TheCrypted/STAT-4830-project-base/blob/main/docs/final_report.md)
+### Demo 1: optimization pipelines
 
+Path:
 
+```text
+notebooks/demo_01_optimization_equity_and_polymarket.ipynb
+```
 
+This notebook is the compact optimization demo. It runs two workflows:
 
+1. **Equity optimizer** on `data/stock_market/sp500_monthly (1) (1).csv`.
+2. **Polymarket mispricing optimizer** on a deterministic subset of `data/prediction_market/polymarket_daily_panel_60plus.csv`.
+
+Launch it interactively:
+
+```bash
+jupyter notebook notebooks/demo_01_optimization_equity_and_polymarket.ipynb
+```
+
+What it shows:
+
+- Rolling equity moment estimation with `src.model.estimate_moments`.
+- Long-only simplex optimization with risk and turnover penalties via `src.model.optimize_weights`.
+- Polymarket daily-panel enrichment, `p_hat` modeling, executable Yes-price estimation, projected-gradient portfolio optimization, and diagnostic outputs.
+- Saved demo artifacts under `Outputs/demo_optimization/`.
+
+Approximate quick-demo results on the included data:
+
+| Demo section | Key result |
+|---|---:|
+| Equity optimized annual Sharpe | about `0.947` |
+| Equity equal-weight same-universe annual Sharpe | about `0.925` |
+| Equity optimized max drawdown | about `-0.192` |
+| Polymarket demo periods | `55` |
+| Polymarket mean objective | about `0.0284` |
+| Polymarket mean MSE | about `0.0030` |
+| Polymarket mean turnover | about `0.0849` |
+
+These are quick smoke-demo numbers, not the final full-run report. The point of the notebook is to make the optimization mechanics easy to inspect and rerun.
+
+### Demo 2: Polymarket panel experiments
+
+Path:
+
+```text
+notebooks/demo_02_polymarket_panel_experiments.ipynb
+```
+
+Launch it interactively:
+
+```bash
+jupyter notebook notebooks/demo_02_polymarket_panel_experiments.ipynb
+```
+
+What it shows:
+
+- Full daily-panel load from `polymarket_daily_panel_60plus.csv`.
+- Feature construction from `src/polymarket/panel_experiments.py`.
+- The 60% / 20% / 20% chronological split and no-overlap sanity checks.
+- All five experiment functions.
+- Generated markdown reports, figures, and tables under `Outputs/demo_polymarket_panel_experiments/`.
+
+The notebook reproduces the same experiment family as the CLI script, while keeping the outputs separate from the checked-in production reports.
+
+---
+
+## 5. Equity optimization reproduction
+
+### 5.1 Data
+
+The equity data lives at:
+
+```text
+data/stock_market/sp500_monthly (1) (1).csv
+```
+
+Important columns used by the demo and old notebooks:
+
+- `date`: monthly timestamp.
+- `permno`: asset identifier.
+- `ret`: monthly return.
+- `prc`: price, used for market-cap screening.
+- `shrout`: shares outstanding, used with price for market-cap screening.
+- `shrcd`, `exchcd`: CRSP-style share-code and exchange filters.
+
+### 5.2 Core objective
+
+The equity optimizer solves a long-only rolling portfolio problem:
+
+```text
+maximize_w  mu_t' w - gamma * w' Sigma_t w - kappa * ||w - w_prev||_1
+subject to  w >= 0, sum(w) = 1
+```
+
+Implementation:
+
+- `src/model.py::estimate_moments(window_returns)` estimates `mu_t` and `Sigma_t` from a rolling window.
+- `src/model.py::optimize_weights(mu, Sigma, w_prev, gamma, kappa, steps, lr)` applies projected subgradient ascent and projects back to the simplex.
+
+### 5.3 Fast reproduction path
+
+Run the new optimization demo notebook:
+
+```bash
+jupyter notebook notebooks/demo_01_optimization_equity_and_polymarket.ipynb
+```
+
+The equity section uses a deterministic reduced universe for speed:
+
+- top market-cap names at each rebalance date,
+- rolling covariance window,
+- previous-weight turnover alignment,
+- equal-weight same-universe benchmark.
+
+### 5.4 Older development notebooks
+
+Earlier equity development lives in the `notebooks/Week*.ipynb` files, especially the Week 10 notebooks. Some of those were built for Google Colab and expect manual file upload. The new demo notebook is preferable for a local, reproducible run because it uses the checked-in CSV directly and avoids manual upload.
+
+---
+
+## 6. Polymarket mispricing optimization reproduction
+
+### 6.1 Architecture
+
+The Polymarket optimization code is split into small modules:
+
+| File | Responsibility |
+|---|---|
+| `src/polymarket/load.py` | Load CSVs, parse `outcomePrices`, parse event IDs/slugs, normalize timestamps. |
+| `src/polymarket/features.py` | Build fold-safe features and fit `StandardScaler` on train only. |
+| `src/polymarket/execution.py` | Approximate executable Yes price and liquidity loading. |
+| `src/polymarket/model_baseline.py` | Ridge regression on `logit(implied_0)` to estimate `p_hat`. |
+| `src/polymarket/optimizer.py` | Projected subgradient optimizer with contract, event, gross, and liquidity constraints. |
+| `src/polymarket/backtest.py` | Walk-forward loop, train-only fitting, next-step realized proxy PnL. |
+| `src/polymarket/io.py` | Save weights, trades, PnL, metrics, and summary files. |
+| `src/polymarket/diagnostics.py` | Save diagnostic plots. |
+| `scripts/run_polymarket_mispricing.py` | CLI entry point. |
+
+### 6.2 Objective
+
+For each decision date, the optimizer estimates edge:
+
+```text
+edge_i = p_hat_i - c_exec_i
+```
+
+and maximizes:
+
+```text
+F(w) = sum_i w_i * edge_i
+       - gamma * sum_i w_i^2 * p_hat_i * (1 - p_hat_i)
+       - kappa * ||w - w_prev||_1
+```
+
+Main constraints:
+
+- gross weight `sum(w) <= 1`,
+- nonnegative long-Yes weights,
+- per-contract cap,
+- per-event cap,
+- liquidity-loading budget.
+
+### 6.3 Fast notebook reproduction
+
+The fastest reliable reproduction is the Polymarket section of:
+
+```bash
+jupyter notebook notebooks/demo_01_optimization_equity_and_polymarket.ipynb
+```
+
+This uses a deterministic subset of the daily panel and writes outputs to:
+
+```text
+Outputs/demo_optimization/polymarket_mispricing/
+```
+
+Expected files:
+
+```text
+diagnostics.png
+metrics_by_fold.json
+pnl_by_fold.csv
+summary.json
+summary.txt
+trades.csv
+weights.csv
+```
+
+### 6.4 CLI reproduction
+
+Run from the repo root:
+
+```bash
+export PYTHONPATH=src
+python scripts/run_polymarket_mispricing.py \
+  --csv data/prediction_market/polymarket_daily_panel_60plus.csv \
+  --out Outputs/polymarket_mispricing \
+  --folds 5 \
+  --gamma 2.0 \
+  --kappa 0.05 \
+  --ridge-alpha 5.0
+```
+
+Notes:
+
+- The daily-panel CLI refits a model for each decision date and can take several minutes on a full run.
+- The rich snapshot file `polymarket_markets_rich.csv` is useful for schema exploration, but the current walk-forward backtest needs repeated price observations per market to compute `_next_implied`. Use the daily panel for optimization backtests.
+- If you only need a fast sanity check, run the new demo notebook instead of the full CLI.
+
+---
+
+## 7. Polymarket panel experiments reproduction
+
+### 7.1 Architecture
+
+The five panel experiments are implemented in one module:
+
+```text
+src/polymarket/panel_experiments.py
+```
+
+Core functions:
+
+| Function | Purpose |
+|---|---|
+| `load_panel(csv_path)` | Load and type the daily panel. |
+| `add_features(df)` | Add lags, returns, rolling volatility, liquidity, maturity, and cross-sectional features. |
+| `split_60_20_20(df)` | Make chronological train/validation/test split. |
+| `sanity_check_no_overlap(train, valid, test)` | Verify no split overlap and chronological order. |
+| `run_exp_01(df, out_dir)` | Persistent predictability net of costs. |
+| `run_exp_02(df, out_dir)` | Liquidity and forecastability. |
+| `run_exp_03(df, out_dir)` | Cross-sectional factors. |
+| `run_exp_04(df, out_dir)` | Unresolved market risk/reliability. |
+| `run_exp_05(df, out_dir)` | Validation design stress test. |
+| `to_markdown(exp_name, result, out_path)` | Write per-experiment markdown report. |
+
+The experiment designs are described in:
+
+```text
+docs/polymarket_panel/exp_01_persistent_predictability.md
+docs/polymarket_panel/exp_02_liquidity_forecastability.md
+docs/polymarket_panel/exp_03_cross_sectional_factors.md
+docs/polymarket_panel/exp_04_unresolved_market_risk.md
+docs/polymarket_panel/exp_05_validation_design.md
+```
+
+### 7.2 Fast notebook reproduction
+
+Run:
+
+```bash
+jupyter notebook notebooks/demo_02_polymarket_panel_experiments.ipynb
+```
+
+Outputs are written to:
+
+```text
+Outputs/demo_polymarket_panel_experiments/
+```
+
+### 7.3 CLI reproduction
+
+Run:
+
+```bash
+export PYTHONPATH=src
+python scripts/run_panel_experiments.py \
+  --csv data/prediction_market/polymarket_daily_panel_60plus.csv \
+  --out Outputs/polymarket_panel_experiments
+```
+
+Expected output tree:
+
+```text
+Outputs/polymarket_panel_experiments/
+├── master_report.md
+├── reports/
+│   ├── exp_01_report.md
+│   ├── exp_02_report.md
+│   ├── exp_03_report.md
+│   ├── exp_04_report.md
+│   └── exp_05_report.md
+├── exp_01/
+│   ├── fig_exp01_cum_pnl.png
+│   └── table_exp01_decile_returns.csv
+├── exp_02/
+│   ├── fig_exp02_rankic_bucket.png
+│   └── table_exp02_bucket_metrics.csv
+├── exp_03/
+│   └── table_exp03_incremental.csv
+├── exp_04/
+│   └── table_exp04_reliability.csv
+└── exp_05/
+    ├── fig_exp05_val_vs_test.png
+    └── table_exp05_splitter_compare.csv
+```
+
+### 7.4 Expected headline results
+
+The checked-in report `docs/polymarket_panel/final_panel_time_series_report.md` summarizes the full panel run. The important reported values are:
+
+| Experiment | Metric | Reported value |
+|---|---|---:|
+| Exp 1: Persistent predictability | `r2_test` | `-0.0187` |
+| Exp 1: Persistent predictability | `mae_test` | `0.0944` |
+| Exp 1: Persistent predictability | `directional_accuracy_test` | `0.5362` |
+| Exp 1: Persistent predictability | `rank_ic_test` | `0.0769` |
+| Exp 1: Persistent predictability | `net_sharpe_test` | `0.7695` |
+| Exp 1: Persistent predictability | `turnover_test` | `0.2615` |
+| Exp 2: Liquidity and forecastability | `mean_bucket_rank_ic` | `0.0915` |
+| Exp 3: Cross-sectional factors | `delta_r2_full_minus_base` | `0.0080` |
+| Exp 4: Unresolved market risk | `brier_directional` | about `0.258` |
+| Exp 4: Unresolved market risk | `interval_coverage_1sigma` | about `0.947` |
+| Exp 4: Unresolved market risk | `mae_adjusted` | about `0.0724` |
+| Exp 5: Validation design | `val_test_corr` | `-0.6091` |
+
+Small numerical differences can occur across scikit-learn versions, especially in the random-forest reliability experiment, but the qualitative conclusions should match.
+
+### 7.5 Sanity checks
+
+Each experiment runner returns a `checks` dictionary. The checked-in and demo runs enforce:
+
+- no train/validation overlap,
+- no train/test overlap,
+- no validation/test overlap,
+- chronological split order,
+- validation-only hyperparameter selection where applicable,
+- train-only liquidity bucket cutoffs,
+- train-frozen factor definitions,
+- no terminal-outcome peeking in unresolved-risk proxy labels.
+
+The expected overall status is `PASS` for all five experiments.
+
+---
+
+## 8. End-to-end reproduction order
+
+A clean full reproduction from the repo root is:
+
+```bash
+# 1. Create environment and install dependencies
+python -m venv .venv
+source .venv/bin/activate
+python -m pip install --upgrade pip
+python -m pip install numpy pandas matplotlib scikit-learn jupyter nbformat nbclient pytest
+
+# 2. Run tests
+python -m pytest -q
+
+# 3. Run full Polymarket panel experiments
+export PYTHONPATH=src
+python scripts/run_panel_experiments.py \
+  --csv data/prediction_market/polymarket_daily_panel_60plus.csv \
+  --out Outputs/polymarket_panel_experiments
+
+# 4. Run or inspect demo notebooks
+jupyter notebook notebooks/demo_01_optimization_equity_and_polymarket.ipynb
+jupyter notebook notebooks/demo_02_polymarket_panel_experiments.ipynb
+
+# 5. Optional: run full Polymarket mispricing optimizer
+python scripts/run_polymarket_mispricing.py \
+  --csv data/prediction_market/polymarket_daily_panel_60plus.csv \
+  --out Outputs/polymarket_mispricing
+```
+
+For a shorter run, do steps 1, 2, and the two demo notebooks only.
+
+---
+
+## 9. Interpretation guide
+
+### Equity optimizer
+
+The equity result asks whether a rolling, risk-aware, turnover-aware portfolio can behave differently from equal weight on the same dynamic universe. The demo confirms the optimizer is not simply reproducing equal weights, and it reports the performance and turnover trade-off.
+
+### Polymarket mispricing optimizer
+
+The mispricing optimizer is a research baseline, not a live trading system. It demonstrates:
+
+- fold-safe feature scaling,
+- model-implied probability estimation,
+- conservative executable price construction,
+- constrained portfolio sizing,
+- turnover accounting,
+- diagnostic artifacts.
+
+The daily-panel next-step PnL proxy is useful for pipeline testing, but it is not a terminal-resolution alpha claim.
+
+### Polymarket panel experiments
+
+The panel experiments provide the stronger research evidence. The final report’s synthesis is:
+
+- Direction/rank signal exists even when absolute `R^2` is weak.
+- Liquidity regime matters for forecastability.
+- Cross-sectional features add modest incremental value.
+- Unresolved-risk haircuts improve reliability.
+- Validation design is fragile; a single holdout can mislead model selection.
+
+---
+
+## 10. Troubleshooting
+
+### `ModuleNotFoundError: No module named 'polymarket'`
+
+Run scripts with:
+
+```bash
+export PYTHONPATH=src
+```
+
+The new notebooks handle this automatically.
+
+### `ModuleNotFoundError: No module named 'src'` in tests
+
+Run tests as:
+
+```bash
+python -m pytest -q
+```
+
+This ensures the current repository root is on the Python import path.
+
+### Case-sensitive output path confusion
+
+Use `Outputs/`, not `outputs/`, on case-sensitive systems.
+
+### Old notebooks ask for manual upload
+
+Use the new demo notebooks for local reproduction. The old weekly notebooks document development history and may contain Colab-specific upload cells.
+
+### Full mispricing run is slow
+
+The full daily-panel mispricing CLI refits the baseline model at each decision date. Use the reduced demo in `demo_01_optimization_equity_and_polymarket.ipynb` for a quick functionality check.
+
+---
+
+## 11. Files changed for reproducibility
+
+The following reproducibility updates were made:
+
+- Added `notebooks/demo_01_optimization_equity_and_polymarket.ipynb`.
+- Added `notebooks/demo_02_polymarket_panel_experiments.ipynb`.
+- Added reusable equity optimizer implementations to `src/model.py`.
+- Added `src/__init__.py` for robust package imports.
+- Fixed the missing `Tuple` import in `src/features.py`.
+- Updated script default paths to use checked-in data under `data/prediction_market/` and outputs under `Outputs/`.
+- Updated `src/polymarket/load.py` to find `polymarket_markets_rich.csv` under `data/prediction_market/`.
+- Preserved the original course README as `README_course_template.md`.
+
+---
+
+## 12. Research documentation index
+
+For deeper context, read these documents in order:
+
+1. `docs/polymarket_panel/polymarket_mispricing_pipeline.md`
+2. `docs/polymarket_panel/master_experiment_plan.md`
+3. `docs/polymarket_panel/exp_01_persistent_predictability.md`
+4. `docs/polymarket_panel/exp_02_liquidity_forecastability.md`
+5. `docs/polymarket_panel/exp_03_cross_sectional_factors.md`
+6. `docs/polymarket_panel/exp_04_unresolved_market_risk.md`
+7. `docs/polymarket_panel/exp_05_validation_design.md`
+8. `docs/polymarket_panel/final_panel_time_series_report.md`
 
