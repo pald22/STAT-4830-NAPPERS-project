@@ -2,15 +2,46 @@
 
 ## Portfolio Optimization for Equities and Prediction Markets
 
-This repository contains our final STAT 4830 project. The project began as a dynamic equity portfolio optimizer and later expanded into prediction markets using Polymarket and Kalshi-style market data. The common theme across both parts is portfolio construction under uncertainty: given noisy estimates, market prices, and realistic constraints, how should capital be allocated?
+This repository contains our final STAT 4830 project, **Dynamic Portfolio Optimization in Equities and Prediction Markets**. The project began as a dynamic equity portfolio optimizer and later expanded into prediction markets using Polymarket and Kalshi-style market data. The common theme across both parts is portfolio construction under uncertainty: given noisy estimates, market prices, covariance risk, and realistic constraints, how should capital be allocated?
 
-The equity portion provides the original optimization framework. The prediction-market portion is the main extension: we adapt the same allocation logic to contracts whose prices can be interpreted as market-implied probabilities, then study mispricing, liquidity, validation design, and unresolved-market risk.
+The equity portion provides the original optimization framework. The prediction-market portion is the main extension: we adapt the same allocation logic to contracts whose prices can be interpreted as market-implied probabilities, then study mispricing, liquidity, validation design, covariance-aware risk, and unresolved-market limitations.
 
 ## Main question
 
-Can a constrained optimization framework be adapted from stock portfolios to prediction-market contracts, and what does the resulting pipeline reveal about predictability, liquidity, and validation in these markets?
+Can a constrained numerical optimization framework be adapted from stock portfolios to prediction-market contracts, and what does the resulting pipeline reveal about calibration, predictability, liquidity, execution assumptions, covariance risk, and validation design?
 
 We do not claim to have produced a live trading system or a reliably profitable strategy. The goal is to build a reproducible research pipeline and evaluate where the framework appears informative, fragile, or limited by the data.
+
+---
+
+## Final deliverable folder
+
+The polished submission materials are located in:
+
+```text
+final_deliverable/
+```
+
+The folder is organized as follows:
+
+```text
+final_deliverable/
+├── final_report/
+│   └── Dynamic_Portfolio_Optimization_in_Equities_and_Prediction_Markets.pdf
+├── implementation_code/
+│   ├── demo_01_standalone_optimization_equity_and_polymarket.ipynb
+│   ├── demo_02_standalone_polymarket_panel_experiments.ipynb
+│   ├── STAT_4830_Portfolio_Optimization_Daily_Regime.ipynb
+│   └── STAT_4830_Portfolio_Optimization_Monthly_Regime.ipynb
+├── llm_exploration/
+│   └── STAT_4830_LLM_Logs.pdf
+├── readme/
+│   └── README.tex
+└── self_critiques/
+    └── STAT_4830_Self_Critique_Edited.pdf
+```
+
+For the final assignment, `final_deliverable/` is the main folder to review. It contains the final report, implementation notebooks, LLM exploration logs, self-critique, and reproducibility guide.
 
 ---
 
@@ -19,13 +50,17 @@ We do not claim to have produced a live trading system or a reliably profitable 
 ```text
 STAT-4830-NAPPERS-project/
 ├── data/
+│   ├── other/
 │   ├── stock_market/
 │   │   └── sp500_monthly (1) (1).csv
 │   └── prediction_market/
+│       ├── Kalshi_Data
 │       ├── polymarket_daily_panel_60plus.csv
 │       ├── polymarket_markets_rich.csv
 │       └── polymarket_time_data.zip
 ├── docs/
+│   ├── assignments/
+│   ├── llm_exploration/
 │   └── polymarket_panel/
 │       ├── polymarket_mispricing_pipeline.md
 │       ├── master_experiment_plan.md
@@ -35,10 +70,21 @@ STAT-4830-NAPPERS-project/
 │       ├── exp_04_unresolved_market_risk.md
 │       ├── exp_05_validation_design.md
 │       └── final_panel_time_series_report.md
+├── figures/
+│   └── Images/
+├── final_deliverable/
 ├── notebooks/
 │   ├── demo_01_optimization_equity_and_polymarket.ipynb
+│   ├── demo_01_standalone_optimization_equity_and_polymarket.ipynb
 │   ├── demo_02_polymarket_panel_experiments.ipynb
+│   ├── demo_02_standalone_polymarket_panel_experiments.ipynb
+│   ├── STAT_4830_Portfolio_Optimization_Daily_Regime.ipynb
+│   ├── STAT_4830_Portfolio_Optimization_Monthly_Regime.ipynb
 │   └── Week*.ipynb
+├── other/
+│   ├── polymarket_exploration.ipynb
+│   ├── polymarket_exploration_60plus.ipynb
+│   └── polymarket_time_data.py
 ├── scripts/
 │   ├── run_polymarket_mispricing.py
 │   └── run_panel_experiments.py
@@ -46,6 +92,7 @@ STAT-4830-NAPPERS-project/
 │   ├── data_loader.py
 │   ├── features.py
 │   ├── model.py
+│   ├── utils.py
 │   └── polymarket/
 │       ├── load.py
 │       ├── features.py
@@ -56,16 +103,21 @@ STAT-4830-NAPPERS-project/
 │       ├── diagnostics.py
 │       ├── io.py
 │       └── panel_experiments.py
+├── supplementary class setup material/
 ├── tests/
 │   └── test_basic.py
+├── README.md
+├── pyproject.toml
+├── uv.lock
 └── Outputs/
     ├── polymarket_mispricing/
+    ├── polymarket_mispricing_60d_cov/
     ├── polymarket_panel_experiments/
     ├── demo_optimization/
     └── demo_polymarket_panel_experiments/
 ```
 
-The `Week*.ipynb` notebooks document earlier development work. For reproducibility, use the two demo notebooks and the scripts in `scripts/`.
+The `Week*.ipynb` notebooks and other exploratory notebooks document earlier development work. For reproducibility, use the final deliverable notebooks, the two demo notebooks, and the scripts in `scripts/`.
 
 ---
 
@@ -81,7 +133,7 @@ source .venv/bin/activate      # macOS/Linux
 # .venv\Scripts\activate       # Windows
 
 python -m pip install --upgrade pip
-python -m pip install numpy pandas matplotlib scikit-learn jupyter nbformat nbclient pytest
+python -m pip install numpy pandas matplotlib scikit-learn torch scipy jupyter nbformat nbclient pytest
 ```
 
 Run the basic tests:
@@ -114,6 +166,12 @@ jupyter notebook notebooks/demo_01_optimization_equity_and_polymarket.ipynb
 jupyter notebook notebooks/demo_02_polymarket_panel_experiments.ipynb
 ```
 
+The final deliverable versions are also available at:
+
+```text
+final_deliverable/implementation_code/
+```
+
 ### Demo 1: optimization framework
 
 `notebooks/demo_01_optimization_equity_and_polymarket.ipynb`
@@ -131,7 +189,7 @@ Outputs/demo_optimization/
 
 The equity section demonstrates rolling moment estimation, long-only optimization, turnover penalties, and comparison to an equal-weight benchmark.
 
-The Polymarket section demonstrates probability estimation, executable-price approximation, constrained position sizing, turnover accounting, and diagnostic output.
+The Polymarket section demonstrates probability estimation, executable-price approximation, constrained position sizing, covariance-aware risk, turnover accounting, and diagnostic output.
 
 ### Demo 2: prediction-market panel experiments
 
@@ -204,7 +262,19 @@ where:
 - `p_hat_i` is the model-estimated probability,
 - `c_exec_i` is the estimated executable Yes price.
 
-The optimizer maximizes:
+The optimizer now supports a rolling empirical covariance penalty across active contracts. At each decision date, `build_contract_covariance` forms a 60-day history using only rows with `_decision_time` before the current decision date, pivots implied prices by contract, computes daily price changes, estimates the sample covariance, repairs invalid entries, symmetrizes the matrix, and adds a small ridge term.
+
+With covariance enabled, the optimizer maximizes:
+
+```text
+F(w) = sum_i w_i * edge_i
+       - gamma * w' Sigma w
+       - kappa * ||w - w_prev||_1
+```
+
+where `Sigma` is the rolling contract covariance matrix.
+
+If `Sigma=None`, the optimizer keeps the previous diagonal Bernoulli-risk objective:
 
 ```text
 F(w) = sum_i w_i * edge_i
@@ -234,9 +304,10 @@ src/polymarket/load.py              # load and clean prediction-market data
 src/polymarket/features.py          # construct fold-safe features
 src/polymarket/execution.py         # approximate executable prices
 src/polymarket/model_baseline.py    # baseline probability model
-src/polymarket/optimizer.py         # constrained optimizer
+src/polymarket/optimizer.py         # covariance builder and constrained optimizer
 src/polymarket/backtest.py          # walk-forward backtest loop
 src/polymarket/diagnostics.py       # plots and diagnostics
+src/polymarket/io.py                # saved summaries and output helpers
 ```
 
 Run the full mispricing optimizer:
@@ -253,6 +324,16 @@ python scripts/run_polymarket_mispricing.py \
   --ridge-alpha 5.0
 ```
 
+Run the covariance version:
+
+```bash
+export PYTHONPATH=src
+
+python scripts/run_polymarket_mispricing.py \
+  --csv data/prediction_market/polymarket_daily_panel_60plus.csv \
+  --out Outputs/polymarket_mispricing_60d_cov
+```
+
 Expected output files include:
 
 ```text
@@ -264,6 +345,13 @@ Outputs/polymarket_mispricing/
 ├── summary.txt
 ├── trades.csv
 └── weights.csv
+```
+
+The covariance run also reports:
+
+```text
+mean_risk_cov
+mean_risk_diag_equiv
 ```
 
 Important limitation: this is a research baseline, not a live trading system. The next-step PnL proxy is useful for testing the pipeline, but it should not be interpreted as proof of terminal-resolution profitability.
@@ -378,9 +466,10 @@ The prediction-market results are more central to the final project. They sugges
 - liquidity matters for forecastability;
 - cross-sectional features add modest incremental value;
 - unresolved markets create reliability problems;
-- validation design is fragile, so a single split can be misleading.
+- validation design is fragile, so a single split can be misleading;
+- covariance-aware allocation is a natural extension of the original diagonal risk penalty, but it still depends on short and noisy historical price panels.
 
-The main takeaway is not that we found a guaranteed trading strategy. The main takeaway is that prediction-market optimization requires careful treatment of probability estimates, executable prices, liquidity, time splits, and unresolved outcomes.
+The main takeaway is not that we found a guaranteed trading strategy. The main takeaway is that prediction-market optimization requires careful treatment of probability estimates, executable prices, covariance risk, liquidity, time splits, and unresolved outcomes.
 
 ---
 
@@ -395,7 +484,7 @@ source .venv/bin/activate
 
 # 2. Install dependencies
 python -m pip install --upgrade pip
-python -m pip install numpy pandas matplotlib scikit-learn jupyter nbformat nbclient pytest
+python -m pip install numpy pandas matplotlib scikit-learn torch scipy jupyter nbformat nbclient pytest
 
 # 3. Run tests
 python -m pytest -q
@@ -406,17 +495,52 @@ python scripts/run_panel_experiments.py \
   --csv data/prediction_market/polymarket_daily_panel_60plus.csv \
   --out Outputs/polymarket_panel_experiments
 
-# 5. Run demo notebooks
-jupyter notebook notebooks/demo_01_optimization_equity_and_polymarket.ipynb
-jupyter notebook notebooks/demo_02_polymarket_panel_experiments.ipynb
-
-# 6. Optional: run full Polymarket mispricing optimizer
+# 5. Optional: run Polymarket mispricing optimizer with covariance risk
 python scripts/run_polymarket_mispricing.py \
   --csv data/prediction_market/polymarket_daily_panel_60plus.csv \
-  --out Outputs/polymarket_mispricing
+  --out Outputs/polymarket_mispricing_60d_cov
+
+# 6. Run demo notebooks
+jupyter notebook notebooks/demo_01_optimization_equity_and_polymarket.ipynb
+jupyter notebook notebooks/demo_02_polymarket_panel_experiments.ipynb
 ```
 
 For a shorter check, run only steps 1-3 and the two demo notebooks.
+
+---
+
+## Data
+
+The project uses two broad classes of data.
+
+### Equity data
+
+The equity data are stored under:
+
+```text
+data/stock_market/
+```
+
+The monthly equity file supports the monthly equity portfolio optimization experiments. The daily equity return dataset used for the daily-regime extension is too large to include directly in the repository. Readers who would like access to the daily equity data for reproduction purposes should contact the authors.
+
+### Prediction-market data
+
+The prediction-market data are stored under:
+
+```text
+data/prediction_market/
+```
+
+This folder includes:
+
+```text
+Kalshi_Data
+polymarket_daily_panel_60plus.csv
+polymarket_markets_rich.csv
+polymarket_time_data.zip
+```
+
+The prediction-market pipeline relies primarily on the Polymarket-style data files. A key limitation is that the packaged artifact does not include final contract resolutions for all contracts, so prediction-market realized PnL is evaluated using next-step quote-to-quote changes rather than final settlement outcomes.
 
 ---
 
@@ -458,7 +582,7 @@ The capitalization matters on case-sensitive systems.
 
 ### Older notebooks ask for manual upload
 
-Use the two demo notebooks for reproduction. The older weekly notebooks are kept as development history and may contain Colab-specific upload cells.
+Use the final deliverable notebooks or the two demo notebooks for reproduction. The older weekly notebooks are kept as development history and may contain Colab-specific upload cells.
 
 ### Full mispricing run is slow
 
@@ -468,7 +592,17 @@ The full mispricing script refits the baseline model repeatedly across decision 
 
 ## Suggested reading order
 
-For the project logic and final results, read:
+For the final assignment, we recommend reviewing the materials in this order:
+
+1. `final_deliverable/final_report/Dynamic_Portfolio_Optimization_in_Equities_and_Prediction_Markets.pdf`
+2. `final_deliverable/implementation_code/demo_01_standalone_optimization_equity_and_polymarket.ipynb`
+3. `final_deliverable/implementation_code/STAT_4830_Portfolio_Optimization_Monthly_Regime.ipynb`
+4. `final_deliverable/implementation_code/STAT_4830_Portfolio_Optimization_Daily_Regime.ipynb`
+5. `final_deliverable/implementation_code/demo_02_standalone_polymarket_panel_experiments.ipynb`
+6. `final_deliverable/llm_exploration/STAT_4830_LLM_Logs.pdf`
+7. `final_deliverable/self_critiques/STAT_4830_Self_Critique_Edited.pdf`
+
+For the prediction-market experiment logic and final results, also read:
 
 1. `docs/polymarket_panel/polymarket_mispricing_pipeline.md`
 2. `docs/polymarket_panel/master_experiment_plan.md`
@@ -481,6 +615,65 @@ For the project logic and final results, read:
 
 ---
 
+## Development process and LLM use
+
+The file
+
+```text
+final_deliverable/llm_exploration/STAT_4830_LLM_Logs.pdf
+```
+
+documents our use of LLMs throughout the project. LLMs helped with brainstorming, code scaffolding, debugging, data inspection, explanation, writing, and presentation preparation. However, the team remained responsible for choosing the research direction, validating assumptions, running experiments, checking code, interpreting outputs, and deciding which claims were supported by the evidence.
+
+---
+
+## Self-critique and limitations
+
+The file
+
+```text
+final_deliverable/self_critiques/STAT_4830_Self_Critique_Edited.pdf
+```
+
+provides a detailed reflection on the strengths and limitations of the project.
+
+The main limitations are:
+
+- The equity optimizer relies heavily on rolling sample means and covariance estimates, which are noisy in financial data.
+- Hyperparameter exploration was informative, but future work with more date-level observations could impose an even cleaner development, validation, and test split.
+- Equal-weight and broad index benchmarks are useful, but future work should include additional internal baselines such as market-cap weighting, minimum variance, risk parity, momentum, and volatility-scaled strategies.
+- The prediction-market extension is limited by the available data. The packaged artifact does not include fully resolved outcomes for all contracts, so realized PnL is measured using next-step quote changes rather than final settlement values.
+- The prediction-market model is intentionally simple and should be viewed as a baseline research framework rather than a final trading system.
+- The covariance-risk update improves the risk model structure, but rolling covariance estimates are still noisy and should not be interpreted as a definitive model of contract dependence.
+
+---
+
+## Future research directions
+
+Several natural extensions follow from the project:
+
+- Use shrinkage covariance estimators, factor-model covariance matrices, Bayesian expected-return estimates, and stronger regularization in the equity optimizer.
+- Add more portfolio-rule baselines, including market-cap weighting, minimum variance, risk parity, momentum, and volatility-scaled strategies.
+- Build a resolved prediction-market dataset with contract histories, order-book data, liquidity measures, event categories, final resolutions, and settlement dates.
+- Evaluate prediction-market performance using settlement-based PnL rather than only next-step quote-to-quote changes.
+- Add richer prediction-market features, including text embeddings, event categories, price histories, volume changes, order-book depth, news signals, and external fundamentals.
+- Make the prediction-market optimizer more execution-aware by modeling bid-ask spreads, market depth, partial fills, slippage, fees, and order timing.
+- Extend the prediction-market covariance model with shrinkage, event-level factor structure, and more robust handling of sparse histories.
+- Modularize the code further into a more reusable research package.
+
+---
+
 ## Project status
 
-This repository contains a reproducible research pipeline for equity and prediction-market optimization. The equity portion provides the original optimization base. The prediction-market portion is the main final extension and includes the most important experiments, diagnostics, and interpretation.
+This repository contains a reproducible research pipeline for dynamic portfolio optimization in equities and prediction markets. The equity portion provides the original optimization base. The prediction-market portion extends the same allocation logic to a newer and less standardized market setting. The project should be read as an applied numerical optimization study. Its main contribution is to show how optimization objectives, constraints, numerical solvers, regularization, data limitations, covariance risk, and evaluation design interact when theory is turned into an empirical allocation system.
+
+---
+
+## Authors and course information
+
+- Naseebullah Andar
+- Samantha Agisim
+- Patrick Ledoit
+
+Course: STAT 4830: Numerical Optimization for Data Science and Machine Learning  
+Research Advisor: Dr. Damek Davis
