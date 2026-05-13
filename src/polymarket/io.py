@@ -34,5 +34,7 @@ def save_run(out_dir: Path, result: dict[str, Any]) -> None:
         f"mean_objective: {summary.get('mean_objective', '')}",
         f"mean_mse_p_vs_implied: {summary.get('mean_mse', '')}",
         f"mean_turnover: {summary.get('mean_turnover', '')}",
+        f"mean_risk_cov: {summary.get('mean_risk_cov', '')}",
+        f"mean_risk_diag_equiv: {summary.get('mean_risk_diag_equiv', '')}",
     ]
     (out_dir / "summary.txt").write_text("\n".join(lines), encoding="utf-8")

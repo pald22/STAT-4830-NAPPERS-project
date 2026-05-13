@@ -12,7 +12,11 @@ import pandas as pd
 from polymarket.execution import executable_yes_price, liquidity_loadings
 from polymarket.features import fit_transform_features
 from polymarket.model_baseline import fit_ridge_logit_implied, predict_p_hat
-from polymarket.optimizer import maximize_portfolio_projected_gradient, total_objective
+from polymarket.optimizer import (
+    build_contract_covariance,
+    maximize_portfolio_projected_gradient,
+    total_objective,
+)
 from polymarket import io as poly_io
 
 
@@ -30,6 +34,7 @@ class MispricingConfig:
     n_opt_iter: int = 800
     train_ratio: float = 0.6
     valid_ratio: float = 0.2
+    cov_lookback_days: int = 60
 
 
 def assign_time_folds(df: pd.DataFrame, n_folds: int) -> pd.Series:
@@ -152,6 +157,18 @@ def run_walk_forward(
 
         w_prev = np.array([w_prev_by_id.get(i, 0.0) for i in test["id"].values], dtype=float)
 
+        active_ids = list(test["id"].values)
+        Sigma = build_contract_covariance(
+            history_df=df,
+            active_contract_ids=active_ids,
+            decision_date=ref_time,
+            price_col="implied_0",
+            contract_col="id",
+            date_col="_decision_time",
+            lookback_days=cfg.cov_lookback_days,
+            p_hat=p_hat,
+        )
+
         w_opt, _hist = maximize_portfolio_projected_gradient(
             a,
             p_hat,
@@ -164,12 +181,15 @@ def run_walk_forward(
             w_event_max=cfg.w_event_max,
             liq_budget=cfg.liq_budget,
             n_iter=cfg.n_opt_iter,
+            Sigma=Sigma,
         )
 
         for i, mid in enumerate(test["id"].values):
             w_prev_by_id[mid] = float(w_opt[i])
 
-        obj = total_objective(w_opt, a, p_hat, w_prev, cfg.gamma, cfg.kappa)
+        obj = total_objective(w_opt, a, p_hat, w_prev, cfg.gamma, cfg.kappa, Sigma=Sigma)
+        risk_cov = float(w_opt @ Sigma @ w_opt)
+        risk_diag_equiv = float(np.sum((w_opt**2) * p_hat * (1.0 - p_hat)))
         turnover = float(np.sum(np.abs(w_opt - w_prev)))
         implied_t = test["implied_0"].values
         mse = float(np.nanmean((p_hat - implied_t) ** 2))
@@ -191,6 +211,8 @@ def run_walk_forward(
                 "sum_w": float(np.sum(w_opt)),
                 "turnover_l1": turnover,
                 "pnl_realized_next_step": pnl_realized,
+                "risk_cov": risk_cov,
+                "risk_diag_equiv": risk_diag_equiv,
             }
         )
 
@@ -233,6 +255,8 @@ def run_walk_forward(
                 "pnl_realized_next_step": pnl_realized,
                 "objective": obj,
                 "turnover_l1": turnover,
+                "risk_cov": risk_cov,
+                "risk_diag_equiv": risk_diag_equiv,
             }
         )
 
@@ -256,6 +280,8 @@ def run_walk_forward(
         "mean_objective": float(np.mean([m["objective"] for m in metrics_rows])) if metrics_rows else 0.0,
         "mean_mse": float(np.mean([m["mse_p_vs_implied"] for m in metrics_rows])) if metrics_rows else 0.0,
         "mean_turnover": float(np.mean([m["turnover_l1"] for m in metrics_rows])) if metrics_rows else 0.0,
+        "mean_risk_cov": float(np.mean([m["risk_cov"] for m in metrics_rows])) if metrics_rows else 0.0,
+        "mean_risk_diag_equiv": float(np.mean([m["risk_diag_equiv"] for m in metrics_rows])) if metrics_rows else 0.0,
     }
 
     result = {
