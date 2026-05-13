@@ -1,0 +1,7 @@
+Polymarket mispricing baseline — summary
+
+mean_objective: 0.050601113046222404
+mean_mse_p_vs_implied: 0.021671831138810684
+mean_turnover: 0.07713893801678079
+mean_risk_cov: 0.0011477758213638035
+mean_risk_diag_equiv: 0.0011477575150171658
