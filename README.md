@@ -8,9 +8,7 @@ The equity portion provides the original optimization framework. The prediction-
 
 ## Main question
 
-Can a constrained numerical optimization framework be adapted from stock portfolios to prediction-market contracts, and what does the resulting pipeline reveal about calibration, predictability, liquidity, execution assumptions, covariance risk, and validation design?
-
-We do not claim to have produced a live trading system or a reliably profitable strategy. The goal is to build a reproducible research pipeline and evaluate where the framework appears informative, fragile, or limited by the data.
+Can a constrained numerical optimization framework be adapted from stock portfolios to prediction-market contracts, and what does the resulting pipeline reveal about calibration, predictability, liquidity, execution assumptions, covariance risk, and validation design? The goal is to build a reproducible research pipeline and evaluate where the framework appears informative, fragile, or limited by the data.
 
 ---
 
