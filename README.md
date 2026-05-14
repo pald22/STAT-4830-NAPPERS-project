@@ -29,8 +29,6 @@ final_deliverable/
 ├── final_report/
 │   └── Dynamic_Portfolio_Optimization_in_Equities_and_Prediction_Markets.pdf
 ├── implementation_code/
-│   ├── demo_01_standalone_optimization_equity_and_polymarket.ipynb
-│   ├── demo_02_standalone_polymarket_panel_experiments.ipynb
 │   ├── STAT_4830_Portfolio_Optimization_Daily_Regime.ipynb
 │   └── STAT_4830_Portfolio_Optimization_Monthly_Regime.ipynb
 ├── llm_exploration/
@@ -74,20 +72,18 @@ STAT-4830-NAPPERS-project/
 │   └── Images/
 ├── final_deliverable/
 ├── notebooks/
-│   ├── demo_01_optimization_equity_and_polymarket.ipynb
-│   ├── demo_01_standalone_optimization_equity_and_polymarket.ipynb
-│   ├── demo_02_polymarket_panel_experiments.ipynb
-│   ├── demo_02_standalone_polymarket_panel_experiments.ipynb
 │   ├── STAT_4830_Portfolio_Optimization_Daily_Regime.ipynb
 │   ├── STAT_4830_Portfolio_Optimization_Monthly_Regime.ipynb
 │   └── Week*.ipynb
 ├── other/
+│   ├── scripts/
+│   │   ├── run_panel_experiments.py
+│   │   └── run_polymarket_mispricing.py
+│   ├── demo_01_standalone_optimization_equity_and_polymarket.ipynb
+│   ├── demo_02_standalone_polymarket_panel_experiments.ipynb
 │   ├── polymarket_exploration.ipynb
 │   ├── polymarket_exploration_60plus.ipynb
 │   └── polymarket_time_data.py
-├── scripts/
-│   ├── run_polymarket_mispricing.py
-│   └── run_panel_experiments.py
 ├── src/
 │   ├── data_loader.py
 │   ├── features.py
@@ -117,7 +113,7 @@ STAT-4830-NAPPERS-project/
     └── demo_polymarket_panel_experiments/
 ```
 
-The `Week*.ipynb` notebooks and other exploratory notebooks document earlier development work. For reproducibility, use the final deliverable notebooks, the two demo notebooks, and the scripts in `scripts/`.
+The `Week*.ipynb` notebooks and other exploratory notebooks document earlier development work. For reproducibility, use the final deliverable notebooks, the two demo notebooks in `other/`, and the scripts in `other/scripts/`.
 
 ---
 
@@ -162,8 +158,8 @@ export PYTHONPATH=src          # macOS/Linux
 For a quick reproduction of the main project outputs, run these two notebooks:
 
 ```bash
-jupyter notebook notebooks/demo_01_optimization_equity_and_polymarket.ipynb
-jupyter notebook notebooks/demo_02_polymarket_panel_experiments.ipynb
+jupyter notebook other/demo_01_standalone_optimization_equity_and_polymarket.ipynb
+jupyter notebook other/demo_02_standalone_polymarket_panel_experiments.ipynb
 ```
 
 The final deliverable versions are also available at:
@@ -174,7 +170,7 @@ final_deliverable/implementation_code/
 
 ### Demo 1: optimization framework
 
-`notebooks/demo_01_optimization_equity_and_polymarket.ipynb`
+`other/demo_01_standalone_optimization_equity_and_polymarket.ipynb`
 
 This notebook shows both versions of the optimizer:
 
@@ -193,7 +189,7 @@ The Polymarket section demonstrates probability estimation, executable-price app
 
 ### Demo 2: prediction-market panel experiments
 
-`notebooks/demo_02_polymarket_panel_experiments.ipynb`
+`other/demo_02_standalone_polymarket_panel_experiments.ipynb`
 
 This notebook reproduces the main prediction-market experiment family using:
 
@@ -244,7 +240,6 @@ optimize_weights(mu, Sigma, w_prev, gamma, kappa, steps, lr)
 This part of the project asks whether a rolling, risk-aware, turnover-aware optimizer can improve on equal weighting over the same dynamic universe. It also exposed one of the main limitations of the project: portfolio optimization is very sensitive to noisy estimates of expected returns and covariances.
 
 ---
-
 ## Prediction-market mispricing optimizer
 
 The prediction-market extension adapts the equity allocation framework to Polymarket-style contracts.
@@ -310,12 +305,12 @@ src/polymarket/diagnostics.py       # plots and diagnostics
 src/polymarket/io.py                # saved summaries and output helpers
 ```
 
-Run the full mispricing optimizer:
+Run the full mispricing optimizer from the repository root:
 
 ```bash
 export PYTHONPATH=src
 
-python scripts/run_polymarket_mispricing.py \
+python other/scripts/run_polymarket_mispricing.py \
   --csv data/prediction_market/polymarket_daily_panel_60plus.csv \
   --out Outputs/polymarket_mispricing \
   --folds 5 \
@@ -324,12 +319,12 @@ python scripts/run_polymarket_mispricing.py \
   --ridge-alpha 5.0
 ```
 
-Run the covariance version:
+Run the covariance version from the repository root:
 
 ```bash
 export PYTHONPATH=src
 
-python scripts/run_polymarket_mispricing.py \
+python other/scripts/run_polymarket_mispricing.py \
   --csv data/prediction_market/polymarket_daily_panel_60plus.csv \
   --out Outputs/polymarket_mispricing_60d_cov
 ```
@@ -366,12 +361,12 @@ The strongest prediction-market evidence comes from the panel experiments. These
 src/polymarket/panel_experiments.py
 ```
 
-Run the full experiment suite:
+Run the full experiment suite from the repository root:
 
 ```bash
 export PYTHONPATH=src
 
-python scripts/run_panel_experiments.py \
+python other/scripts/run_panel_experiments.py \
   --csv data/prediction_market/polymarket_daily_panel_60plus.csv \
   --out Outputs/polymarket_panel_experiments
 ```
@@ -491,18 +486,18 @@ python -m pytest -q
 
 # 4. Run full Polymarket panel experiments
 export PYTHONPATH=src
-python scripts/run_panel_experiments.py \
+python other/scripts/run_panel_experiments.py \
   --csv data/prediction_market/polymarket_daily_panel_60plus.csv \
   --out Outputs/polymarket_panel_experiments
 
 # 5. Optional: run Polymarket mispricing optimizer with covariance risk
-python scripts/run_polymarket_mispricing.py \
+python other/scripts/run_polymarket_mispricing.py \
   --csv data/prediction_market/polymarket_daily_panel_60plus.csv \
   --out Outputs/polymarket_mispricing_60d_cov
 
 # 6. Run demo notebooks
-jupyter notebook notebooks/demo_01_optimization_equity_and_polymarket.ipynb
-jupyter notebook notebooks/demo_02_polymarket_panel_experiments.ipynb
+jupyter notebook other/demo_01_standalone_optimization_equity_and_polymarket.ipynb
+jupyter notebook other/demo_02_standalone_polymarket_panel_experiments.ipynb
 ```
 
 For a shorter check, run only steps 1-3 and the two demo notebooks.
@@ -521,7 +516,7 @@ The equity data are stored under:
 data/stock_market/
 ```
 
-The monthly equity file supports the monthly equity portfolio optimization experiments. The daily equity return dataset used for the daily-regime extension is too large to include directly in the repository. Readers who would like access to the daily equity data for reproduction purposes should contact the authors.
+The monthly equity file supports the monthly equity portfolio optimization experiments. The daily equity return dataset used for the daily-regime extension is too large to include directly in the repository. Readers who would like access to the daily equity data for reproduction purposes should contact the authors at andar@sas.upenn.edu.
 
 ### Prediction-market data
 
@@ -554,6 +549,14 @@ Set the Python path before running scripts:
 export PYTHONPATH=src
 ```
 
+Scripts are stored in `other/scripts/`, but they should be run from the repository root. For example:
+
+```bash
+python other/scripts/run_panel_experiments.py \
+  --csv data/prediction_market/polymarket_daily_panel_60plus.csv \
+  --out Outputs/polymarket_panel_experiments
+```
+
 ### Tests cannot import local modules
 
 Run:
@@ -582,7 +585,7 @@ The capitalization matters on case-sensitive systems.
 
 ### Older notebooks ask for manual upload
 
-Use the final deliverable notebooks or the two demo notebooks for reproduction. The older weekly notebooks are kept as development history and may contain Colab-specific upload cells.
+Use the final deliverable notebooks or the two demo notebooks in `other/` for reproduction. The older weekly notebooks are kept as development history and may contain Colab-specific upload cells.
 
 ### Full mispricing run is slow
 
@@ -595,10 +598,10 @@ The full mispricing script refits the baseline model repeatedly across decision 
 For the final assignment, we recommend reviewing the materials in this order:
 
 1. `final_deliverable/final_report/Dynamic_Portfolio_Optimization_in_Equities_and_Prediction_Markets.pdf`
-2. `final_deliverable/implementation_code/demo_01_standalone_optimization_equity_and_polymarket.ipynb`
+2. `other/demo_01_standalone_optimization_equity_and_polymarket.ipynb`
 3. `final_deliverable/implementation_code/STAT_4830_Portfolio_Optimization_Monthly_Regime.ipynb`
 4. `final_deliverable/implementation_code/STAT_4830_Portfolio_Optimization_Daily_Regime.ipynb`
-5. `final_deliverable/implementation_code/demo_02_standalone_polymarket_panel_experiments.ipynb`
+5. `other/demo_02_standalone_polymarket_panel_experiments.ipynb`
 6. `final_deliverable/llm_exploration/STAT_4830_LLM_Logs.pdf`
 7. `final_deliverable/self_critiques/STAT_4830_Self_Critique_Edited.pdf`
 
@@ -676,4 +679,4 @@ This repository contains a reproducible research pipeline for dynamic portfolio 
 - Patrick Ledoit
 
 Course: STAT 4830: Numerical Optimization for Data Science and Machine Learning  
-Research Advisor: Dr. Damek Davis
+Instructor: Dr. Damek Davis
